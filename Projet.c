@@ -53,7 +53,7 @@ void ajouter_client(){
     char nom[50];
     char prenom[50];
     char profession[50];
-    int telephone;
+    char telephone[13];
     printf("Veuillez entrez les informations concernant le client:\nLe nom : ");
     scanf("%s",&nom);
     printf("Le Prenom : ");
@@ -61,9 +61,19 @@ void ajouter_client(){
     printf("La profession : ");
     scanf("%s",&profession);
     printf("Le telephone : ");
-    scanf("%d",&telephone);
+    scanf("%s",&telephone);
 
     //Inscription du client dans le fichier CSV
+
+    FILE *fichier= fopen("clients.csv","a");
+
+    if(fichier!=NULL){
+        fprintf(fichier,"%d;%s;%s;%s;%s;\n",id,nom,prenom,profession,telephone);
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 
     printf("\nLe client %s %s a bien ete ajoute avec comme identifiant : %d\n\n",nom,prenom,id);
 }
@@ -73,7 +83,7 @@ void modifier_client(){
     char nom[50];
     char prenom[50];
     char profession[50];
-    int telephone;
+    char telephone[13];
     printf("Veuillez entrez l'id du client a modifier : ");
     scanf("%d",&id);
 
@@ -86,7 +96,7 @@ void modifier_client(){
     printf("Sa profession : ");
     scanf("%s",&profession);
     printf("Son telephone : ");
-    scanf("%d",&telephone);
+    scanf("%s",&telephone);
 
     // Modification du client dans le CSV
 
@@ -268,7 +278,7 @@ void importer(){
 
 
 int main(void){
-   menu(1);
-   return 0;
+    menu(1);
+    return 0;
 }
 
