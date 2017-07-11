@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-
+#include <string.h>
 
 
 
@@ -71,11 +71,38 @@ void supprimer_client(){
 }
 
 void rechercher_client(){
+    char nomseek[50];
     char nom[50];
-    printf("Veuillez entrez le nom du client a rechercher : ");
-    scanf("%s",nom);
 
-    // Recherche du client dans le CSV
+    printf("Veuillez entrez le nom du client a rechercher : ");
+    scanf("%s",&nomseek);
+
+    FILE *fichier= fopen("clients.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char ligne[200];
+
+        while(fscanf(fichier,"%d;%s;",id,ligne)>0){
+
+            char *name;
+            char *search = ";";
+            name = strtok(ligne, search);
+
+            strcpy(nom , name);
+
+            if(strcmp(nom,nomseek) == 0){
+                printf("\nLe client %s a bien ete trouve avec comme identifiant : %d\n\n",nom,id);
+            }
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 
 }
 
