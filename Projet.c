@@ -107,7 +107,7 @@ void modifier_client(){
 
         fclose(fichier);
 
-        printf("Le client %s %s a bien été mis à jour\n", prenom, nom);
+        printf("\nLe client %s %s a bien été mis à jour\n\n", prenom, nom);
     }
     else{
         printf("Echec de l'ouverture");
@@ -155,7 +155,7 @@ void supprimer_client(){
 
         fclose(fichier);
 
-        printf("Le client ayant pour id %d a bien été supprimé\n", idseek);
+        printf("\nLe client ayant pour id %d a bien été supprimé\n\n", idseek);
     }
     else{
         printf("Echec de l'ouverture");
@@ -250,7 +250,7 @@ void creer_compte(){
     scanf("%f",&solde);
     printf("Le taux : ");
     scanf("%f",&taux);
-    printf("La duree en heures : ");
+    printf("La duree en jours avant activation : ");
     scanf("%d",&duree);
 
     FILE *fichier= fopen("comptes.csv","a");
@@ -339,7 +339,7 @@ void fermer_compte(){
 
         fclose(fichier);
 
-        printf("Le compte ayant pour id %d a bien été supprimé\n", idseek);
+        printf("\nLe compte ayant pour id %d a bien été supprimé\n\n", idseek);
     }
     else{
         printf("Echec de l'ouverture");
