@@ -22,8 +22,6 @@ void ajouter_client(){
     printf("Le telephone : ");
     scanf("%s",telephone);
 
-    //Inscription du client dans le fichier CSV
-
     FILE *fichier= fopen("clients.csv","a");
 
     if(fichier!=NULL){
@@ -45,8 +43,6 @@ void modifier_client(){
     char telephone[13];
     printf("Veuillez entrez l'id du client a modifier : ");
     scanf("%d",&id);
-
-    // S�lection du clients dans le fichier CSV
 
     printf("Veuillez entrez maintenant les  nouvelles informations concernant le client:\nSon nom : ");
     scanf("%s",nom);
@@ -75,7 +71,7 @@ void rechercher_client(){
     char nom[50];
 
     printf("Veuillez entrez le nom du client a rechercher : ");
-    scanf("%s",&nomseek);
+    scanf("%s",nomseek);
 
     FILE *fichier= fopen("clients.csv","r");
 
@@ -84,7 +80,7 @@ void rechercher_client(){
         int id;
         char ligne[200];
 
-        while(fscanf(fichier,"%d;%s;",id,ligne)>0){
+        while(fscanf(fichier,"%d;%s;",&id,ligne)>0){
 
             char *name;
             char *search = ";";
@@ -114,7 +110,7 @@ void creer_compte(){
     float taux;
     int duree;
 
-    printf("Veuillez entrez les informations concernant le Compte:\nLe nom  du proprietaire: ");
+    printf("Veuillez entrez les informations concernant le Compte:\nLe nom  du proprietaire : ");
     scanf("%s",proprio);
     printf("Le solde : ");
     scanf("%f",&solde);
@@ -123,17 +119,55 @@ void creer_compte(){
     printf("La duree en heures : ");
     scanf("%d",&duree);
 
-    //Inscription du compte dans le fichier CSV
+    FILE *fichier= fopen("comptes.csv","a");
+
+    if(fichier!=NULL){
+        fprintf(fichier,"%d;%f;%f;%d;%s;\n",id,solde,taux,duree,proprio);
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 
     printf("\nLe Compte numero %d avec comme proprietaire %s a bien ete creer\n\n",id,proprio);
+
 }
 
 void consulter_compte(){
-    int proprio;
-    printf("Veuillez entrez le nom du proprietaire du compte a rechercher : ");
-    scanf("%s",proprio);
+    char nomseek[50];
 
-    // Recherche du compte dans le CSV
+    printf("Veuillez entrez le nom du proprietaire du compte a rechercher : ");
+    scanf("%s",nomseek);
+
+    FILE *fichier= fopen("comptes.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char proprio[50];
+        float solde;
+        float taux;
+        int duree;
+
+        while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
+
+            char *name;
+            char *search = ";";
+            name = strtok(proprio, search);
+
+            strcpy(proprio , name);
+
+            if(strcmp(proprio,nomseek) == 0){
+                printf("\nLe proprietaire %s a bien ete trouve avec comme identifiant : %d\n\n",proprio,id);
+            }
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 
 }
 
@@ -142,7 +176,7 @@ void fermer_compte(){
     printf("Veuillez entrez l'id du compte a supprimer : ");
     scanf("%d",&id);
 
-    // Suppression du client dans le CSV
+    // Suppression du compte dans le CSV
 
 }
 
@@ -219,15 +253,97 @@ void gestion_operation(int i){
 }
 
 void afficher_somme_all(){
-    //la somme des montants de tous les comptes du CSV
+
+    float total = 0;
+
+    FILE *fichier= fopen("comptes.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char proprio[50];
+        float solde;
+        float taux;
+        int duree;
+
+        while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
+            total +=solde;
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    printf("La somme de tout les comptes est %f\n",total);
 }
 
 void afficher_somme_type(){
-    //la somme des montants par type de compte du CSV
+    float total = 0;
+    int type;
+
+    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
+    scanf("%d",&type);
+
+    FILE *fichier= fopen("comptes.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char proprio[50];
+        float solde;
+        float taux;
+        int duree;
+
+        while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
+                if(duree == type){
+                    total +=solde;
+                }
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
 }
 
 void afficher_montant_interets(){
-    //le montant d�int�r�ts total et par type de compte que devra verser la banque a la fin de l�ann�e du CSV
+    float total = 0;
+    int type;
+
+    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
+    scanf("%d",&type);
+
+    FILE *fichier= fopen("comptes.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char proprio[50];
+        float solde;
+        float taux;
+        int duree;
+
+        while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
+                if(duree == type){
+                    total +=solde*taux;
+                }
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
 }
 
 void exporter(){
