@@ -449,9 +449,11 @@ void afficher_somme_all(){
 void afficher_somme_type(){
     float total = 0;
     int type;
+    char j[20];
 
-    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
-    scanf("%d",&type);
+    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez le type (0 -> Actif , 1 ou plus -> Inactif ) : ");
+    scanf("%s",j);
+    type = atoi(j);
 
     FILE *fichier= fopen("comptes.csv","r");
 
@@ -464,8 +466,15 @@ void afficher_somme_type(){
         int duree;
 
         while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
-                if(duree == type){
-                    total +=solde;
+                if(type == 0){
+                    if(duree == type){
+                        total +=solde;
+                    }
+                }
+                else{
+                    if(duree > type){
+                        total +=solde;
+                    }
                 }
         }
 
@@ -476,15 +485,17 @@ void afficher_somme_type(){
         printf("Echec de l'ouverture");
     }
 
-    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
+    if(type == 0){
+        printf("La somme de tout les comptes actifs est %f\n",total);
+    }
+    else{
+        printf("La somme de tout les comptes inactifs est %f\n",total);
+    }
 }
 
 void afficher_montant_interets(){
-    float total = 0;
-    int type;
-
-    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
-    scanf("%d",&type);
+    float totalactifs = 0;
+    float totalinactifs = 0;
 
     FILE *fichier= fopen("comptes.csv","r");
 
@@ -497,9 +508,12 @@ void afficher_montant_interets(){
         int duree;
 
         while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
-                if(duree == type){
-                    total +=solde*taux;
-                }
+            if(duree == 0){
+                totalactifs +=solde*taux;
+            }
+            else{
+                totalinactifs +=solde*taux;
+            }
         }
 
     fclose(fichier);
@@ -509,7 +523,8 @@ void afficher_montant_interets(){
         printf("Echec de l'ouverture");
     }
 
-    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
+    printf("Le total des interets des comptes actifs a la fin de l'annee est %f\n",totalactifs);
+    printf("Le total des interets des comptes inactifs a la fin de l'annee est %f\n",totalinactifs);
 }
 
 void exporter(){
