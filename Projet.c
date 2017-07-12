@@ -5,6 +5,31 @@
 #include <string.h>
 
 
+void log_historique(char *textToLog){
+
+    strcat(textToLog, "\n");
+
+    // ajout de l'heure au debut des logs
+    time_t crt = time(NULL);
+    char timeWithLog[300];
+    strftime(timeWithLog, sizeof(timeWithLog), "%I:%M%p: ", localtime(&crt));
+    strcat(timeWithLog, textToLog);
+
+    char nomFile[50];
+    strftime(nomFile, sizeof(nomFile), "%d-%m-%Y", localtime(&crt));
+    strcat(nomFile, "-historique.txt");
+
+    FILE *fichier = fopen(nomFile, "a");
+
+    if(fichier!=NULL){
+        fputs(timeWithLog, fichier);
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+}
 
 void ajouter_client(){
     srand(time(NULL));
@@ -439,6 +464,11 @@ void deposer_argent(){
         fclose(fichier);
 
         printf("\nLe montant %f a bien été ajouté sur le compte %d\n\n", newMontant, idseek);
+
+        // log action
+        char textToLog[100];
+        sprintf(textToLog, "%f € credités sur le compte %d", newMontant, idseek);
+        log_historique(textToLog);
     }
     else{
         printf("Echec de l'ouverture");
@@ -520,6 +550,11 @@ void retirer_argent(){
         fclose(fichier);
 
         printf("\nLe montant %f a bien été débité du compte %d\n\n", newMontant, idseek);
+
+        // log action
+        char textToLog[100];
+        sprintf(textToLog, "%f € débités du compte %d", newMontant, idseek);
+        log_historique(textToLog);
     }
     else{
         printf("Echec de l'ouverture");
@@ -626,6 +661,11 @@ void virer_argent(){
         fclose(fichier);
 
         printf("\nLe montant %f a bien été viré du compte %d vers le compte %d\n\n", newMontant, idDebit, idCredit);
+
+        // log action
+        char textToLog[100];
+        sprintf(textToLog, "%f € virés du compte %d vers le compte %d", newMontant, idDebit, idCredit);
+        log_historique(textToLog);
     }
     else{
         printf("Echec de l'ouverture");
@@ -800,7 +840,7 @@ void gestion_client(int i){
 void menu(int i){
     char j[20];
     while( i != 0){
-        printf("Bienvenue dans la Banque Picsou \nChoisissez votre action:\n1 - Gestion des Clients \n2 - Gestion des comptes \n3 - Gestion des operations \n4 - Administration \n0 - Partir de la Banque\n");
+        printf("Bienvenue dans la Banque Picsou \nChoisissez votre action:\n1 - Gestion des clients \n2 - Gestion des comptes \n3 - Gestion des operations \n4 - Administration \n0 - Partir de la Banque\n");
         scanf("%s", j);
         i = atoi(j);
         if ( i == 1){
