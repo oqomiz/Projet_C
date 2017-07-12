@@ -527,17 +527,109 @@ void retirer_argent(){
 }
 
 void virer_argent(){
-    int id_a;
-    int id_b;
-    float montant=0;
-    printf("Veuillez entrez l'id du compte a debiter : ");
-    scanf("%d",&id_a);
-    printf("Veuillez entrez l'id du compte a crediter : ");
-    scanf("%d",&id_b);
-    printf("Veuillez entrez le montant a bouger : ");
-    scanf("%f",&montant);
+    int idCredit;
+    int idDebit;
+    float newMontant=0;
 
-    // modification du compte dans le CSV
+    printf("Veuillez entrez l'id du compte a debiter : ");
+    scanf("%d",&idDebit);
+    printf("Veuillez entrez l'id du compte a crediter : ");
+    scanf("%d",&idCredit);
+    printf("Veuillez entrez le montant du virement : ");
+    scanf("%f",&newMontant);
+
+    char tmpString[2000] = "";
+
+    // Modification du compte dans le CSV
+    FILE *fichier= fopen("comptes.csv", "r");
+
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        int id;
+        char strInt[20];
+        char strFloat[20];
+
+        float montant;
+        float taux;
+        int delais;
+        int clientId;
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            sscanf(ligne, "%d;%f;%f;%d;%d", &id, &montant, &taux, &delais, &clientId);
+
+            if(id != idDebit && id != idCredit){
+                strcat(tmpString, ligne);
+            } else if(id == idDebit) {
+                sprintf(strInt, "%d", id);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                montant -= newMontant;
+                sprintf(strFloat, "%f", montant);
+                strcat(strFloat, ";");
+                strcat(tmpString, strFloat);
+
+                sprintf(strFloat, "%f", taux);
+                strcat(strFloat, ";");
+                strcat(tmpString, strFloat);
+
+                sprintf(strInt, "%d", delais);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                sprintf(strInt, "%d", clientId);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                strcat(tmpString, "\n");
+            } else if(id == idCredit) {
+                sprintf(strInt, "%d", id);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                montant += newMontant;
+                sprintf(strFloat, "%f", montant);
+                strcat(strFloat, ";");
+                strcat(tmpString, strFloat);
+
+                sprintf(strFloat, "%f", taux);
+                strcat(strFloat, ";");
+                strcat(tmpString, strFloat);
+
+                sprintf(strInt, "%d", delais);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                sprintf(strInt, "%d", clientId);
+                strcat(strInt, ";");
+                strcat(tmpString, strInt);
+
+                strcat(tmpString, "\n");
+            }
+        }
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    // replace file content
+    fichier= fopen("comptes.csv", "w");
+
+    if(fichier!=NULL){
+        fputs(tmpString, fichier);
+
+        fclose(fichier);
+
+        printf("\nLe montant %f a bien été viré du compte %d vers le compte %d\n\n", newMontant, idDebit, idCredit);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 }
 
 void gestion_operation(int i){
