@@ -98,9 +98,6 @@ void rechercher_client(){
                 name = strtok(NULL, search);
                 printf("\tTelephone : %s\n",name);
             }
-            else{
-
-            }
         }
 
     fclose(fichier);
@@ -112,16 +109,47 @@ void rechercher_client(){
 
 }
 
+char* rechercher_client_by_id(int proprio){
+    static char nom[50];
+
+    FILE *fichier= fopen("clients.csv","r");
+
+    if(fichier!=NULL){
+
+        int id;
+        char ligne[200];
+
+        while(fscanf(fichier,"%d;%s;",&id,ligne)>0){
+
+            char *name;
+            char *search = ";";
+            name = strtok(ligne, search);
+
+            if(id == proprio){
+                strcpy(nom , name);
+            }
+        }
+
+    fclose(fichier);
+
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+    return nom;
+}
+
+
 void creer_compte(){
     srand(time(NULL));
     int id = rand()%(1000000-100000) +100000;
-    char proprio[50];
+    int proprio;
     float solde;
     float taux;
     int duree;
 
-    printf("Veuillez entrez les informations concernant le Compte:\nLe nom  du proprietaire : ");
-    scanf("%s",proprio);
+    printf("Veuillez entrez les informations concernant le Compte:\nL'Id client du proprietaire : ");
+    scanf("%d",&proprio);
     printf("Le solde : ");
     scanf("%f",&solde);
     printf("Le taux : ");
@@ -132,43 +160,37 @@ void creer_compte(){
     FILE *fichier= fopen("comptes.csv","a");
 
     if(fichier!=NULL){
-        fprintf(fichier,"%d;%f;%f;%d;%s;\n",id,solde,taux,duree,proprio);
+        fprintf(fichier,"%d;%f;%f;%d;%d;\n",id,solde,taux,duree,proprio);
         fclose(fichier);
     }
     else{
         printf("Echec de l'ouverture");
     }
 
-    printf("\nLe Compte numero %d avec comme proprietaire %s a bien ete creer\n\n",id,proprio);
+    printf("\nLe Compte numero %d avec comme proprietaire %s a bien ete creer\n\n",id,rechercher_client_by_id(proprio));
 
 }
 
 void consulter_compte(){
-    char nomseek[50];
+    int idseek;
 
-    printf("Veuillez entrez le nom du proprietaire du compte a rechercher : ");
-    scanf("%s",nomseek);
+    printf("Veuillez entrez l'id du proprietaire du compte a rechercher : ");
+    scanf("%d",&idseek);
 
     FILE *fichier= fopen("comptes.csv","r");
 
     if(fichier!=NULL){
 
         int id;
-        char proprio[50];
+        int proprio;
         float solde;
         float taux;
         int duree;
 
-        while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
+        while(fscanf(fichier,"%d;%f;%f;%d;%d;",&id,&solde,&taux,&duree,&proprio)>0){
 
-            char *name;
-            char *search = ";";
-            name = strtok(proprio, search);
-
-            strcpy(proprio , name);
-
-            if(strcmp(proprio,nomseek) == 0){
-                printf("\nUn compte avec comme propietaire %s a bien ete trouve : \n\tId : %d\n\tSolde : %f\n\tTaux : %f\n\tDuree : %d\n",proprio,id,solde,taux,duree);
+            if(proprio == idseek){
+                printf("\nUn compte avec comme propietaire %s a bien ete trouve : \n\tId : %d\n\tSolde : %f\n\tTaux : %f\n\tDuree : %d\n",rechercher_client_by_id(proprio),id,solde,taux,duree);
             }
         }
 
