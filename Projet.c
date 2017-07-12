@@ -89,7 +89,17 @@ void rechercher_client(){
             strcpy(nom , name);
 
             if(strcmp(nom,nomseek) == 0){
-                printf("\nLe client %s a bien ete trouve avec comme identifiant : %d\n\n",nom,id);
+                printf("\nUn client avec comme nom %s a bien ete trouve : \n",nom);
+                printf("\tId : %d\n",id);
+                name = strtok(NULL, search);
+                printf("\tPrenom : %s\n",name);
+                name = strtok(NULL, search);
+                printf("\tProfession : %s\n",name);
+                name = strtok(NULL, search);
+                printf("\tTelephone : %s\n",name);
+            }
+            else{
+
             }
         }
 
@@ -158,7 +168,7 @@ void consulter_compte(){
             strcpy(proprio , name);
 
             if(strcmp(proprio,nomseek) == 0){
-                printf("\nLe proprietaire %s a bien ete trouve avec comme identifiant : %d\n\n",proprio,id);
+                printf("\nUn compte avec comme propietaire %s a bien ete trouve : \n\tId : %d\n\tSolde : %f\n\tTaux : %f\n\tDuree : %d\n",proprio,id,solde,taux,duree);
             }
         }
 
