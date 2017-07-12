@@ -38,15 +38,17 @@ void ajouter_client(){
 }
 
 void modifier_client(){
-    int id;
+
+    int idseek;
     char nom[50];
     char prenom[50];
     char profession[50];
     char telephone[13];
-    printf("Veuillez entrez l'id du client a modifier : ");
-    scanf("%d",&id);
 
-    // S�lection du clients dans le fichier CSV
+    char tmpString[2000] = "";
+
+    printf("Veuillez entrez l'id du client a modifier : ");
+    scanf("%d",&idseek);
 
     printf("Veuillez entrez maintenant les  nouvelles informations concernant le client:\nSon nom : ");
     scanf("%s",nom);
@@ -58,7 +60,58 @@ void modifier_client(){
     scanf("%s",telephone);
 
     // Modification du client dans le CSV
+    FILE *fichier= fopen("clients.csv", "r");
 
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        int id;
+        char strId[8];
+        char tmpLine[150];
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            sscanf(ligne, "%d;%s", &id, tmpLine);
+
+            if(id != idseek){
+                strcat(tmpString, ligne);
+            } else {
+                sprintf(strId, "%d", id);
+                strcat(strId, ";");
+
+                strcat(tmpString, strId);
+                strcat(tmpString, nom);
+                strcat(tmpString, ";");
+                strcat(tmpString, prenom);
+                strcat(tmpString, ";");
+                strcat(tmpString, profession);
+                strcat(tmpString, ";");
+                strcat(tmpString, telephone);
+                strcat(tmpString, ";");
+                strcat(tmpString, "\n");
+            }
+        }
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    // replace file content
+    fichier= fopen("clients.csv", "w");
+
+    if(fichier!=NULL){
+        fputs(tmpString, fichier);
+
+        fclose(fichier);
+
+        printf("Le client %s %s a bien été mis à jour\n", prenom, nom);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 }
 
 void supprimer_client(){
@@ -101,6 +154,8 @@ void supprimer_client(){
         fputs(tmpString, fichier);
 
         fclose(fichier);
+
+        printf("Le client ayant pour id %d a bien été supprimé\n", idseek);
     }
     else{
         printf("Echec de l'ouverture");
