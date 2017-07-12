@@ -229,12 +229,50 @@ void consulter_compte(){
 }
 
 void fermer_compte(){
-    int id;
+    int idseek;
+    char tmpString[2000] = "";
+
     printf("Veuillez entrez l'id du compte a supprimer : ");
-    scanf("%d",&id);
+    scanf("%d", &idseek);
 
     // Suppression du client dans le CSV
+    FILE *fichier= fopen("comptes.csv", "r");
 
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        int id;
+        char tmpLine[150];
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            sscanf(ligne, "%d;%s", &id, tmpLine);
+
+            if(id != idseek){
+                strcat(tmpString, ligne);
+            }
+        }
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    // replace file content
+    fichier= fopen("comptes.csv", "w");
+
+    if(fichier!=NULL){
+        fputs(tmpString, fichier);
+
+        fclose(fichier);
+
+        printf("Le compte ayant pour id %d a bien été supprimé\n", idseek);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 }
 
 void gestion_compte(int i){
