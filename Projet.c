@@ -62,12 +62,49 @@ void modifier_client(){
 }
 
 void supprimer_client(){
-    int id;
-    printf("Veuillez entrez l'id du client a supprimer : ");
-    scanf("%d",&id);
+
+    int idseek;
+    char tmpString[2000] = "";
+
+    printf("Veuillez entrez l'id du client à supprimer : ");
+    scanf("%d", &idseek);
 
     // Suppression du client dans le CSV
+    FILE *fichier= fopen("clients.csv", "r");
 
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        int id;
+        char tmpLine[150];
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            sscanf(ligne, "%d;%s", &id, tmpLine);
+
+            if(id != idseek){
+                strcat(tmpString, ligne);
+            }
+        }
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    // replace file content
+    fichier= fopen("clients.csv", "w");
+
+    if(fichier!=NULL){
+        fputs(tmpString, fichier);
+
+        fclose(fichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
 }
 
 void rechercher_client(){
@@ -75,7 +112,7 @@ void rechercher_client(){
     char nom[50];
 
     printf("Veuillez entrez le nom du client a rechercher : ");
-    scanf("%s",&nomseek);
+    scanf("%s",nomseek);
 
     FILE *fichier= fopen("clients.csv","r");
 
@@ -84,7 +121,7 @@ void rechercher_client(){
         int id;
         char ligne[200];
 
-        while(fscanf(fichier,"%d;%s;",id,ligne)>0){
+        while(fscanf(fichier, "%d;%s;", &id, ligne) > 0){
 
             char *name;
             char *search = ";";
@@ -103,7 +140,6 @@ void rechercher_client(){
     else{
         printf("Echec de l'ouverture");
     }
-
 }
 
 void creer_compte(){
@@ -131,7 +167,7 @@ void creer_compte(){
 void consulter_compte(){
     int proprio;
     printf("Veuillez entrez le nom du proprietaire du compte a rechercher : ");
-    scanf("%s",proprio);
+    scanf("%d", &proprio);
 
     // Recherche du compte dans le CSV
 
