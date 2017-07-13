@@ -528,11 +528,133 @@ void afficher_montant_interets(){
 }
 
 void exporter(){
-    //Exporter l�ensemble des donn�es de l�application
+    char vieuxfichier[50];
+    char nomfichier[50];
+    int type;
+    char j[20];
+
+    printf("Veuillez entrez le fichier que vous souhaitez exporter (0 -> clients.csv , 1 ou plus -> comptes.csv ) : ");
+    scanf("%s",j);
+    type = atoi(j);
+
+    if(type == 0){
+        strcpy(vieuxfichier, "clients.csv");
+    }
+    else{
+        strcpy(vieuxfichier, "comptes.csv");
+    }
+
+    printf("Veuillez entrez le nouveau nom de fichier que vous souhaitez (sans extension) : ");
+    scanf("%s",nomfichier);
+    strcat(nomfichier, ".csv");
+
+    FILE *fichier = fopen(vieuxfichier, "r");
+
+    FILE *fichiernew = fopen(nomfichier, "w");
+
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+            fprintf(fichiernew,"%s",ligne);
+        }
+
+        fclose(fichier);
+        fclose(fichiernew);
+
+        printf("Vous pouvez maintenant recuperer le fichier %s, il contiendra toutes les donnees du fichier %s !\n",nomfichier,vieuxfichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
 }
 
 void importer(){
-    //Importer des donn�es dans l�application (selon un format que vous d�finirez, il est fortement conseill� de se baser sur le format qui vous sert a exporter les donn�es). Dans le cas o� l�application contient d�j� des donn�es, les donn�es import�es devront fusionner avec les anciennes.
+    //Importer des donnees dans lapplication (selon un format que vous definirez, il est fortement conseille de se baser sur le format qui vous sert a exporter les donnees). Dans le cas ou lapplication contient deja des donnees, les donnees importees devront fusionner avec les anciennes.
+
+    char vieuxfichier[50];
+    char nomfichier[50];
+    int type;
+    char j[20];
+
+    char tmpString[2000] = "";
+
+    printf("Veuillez entrez le fichier sur lequel que vous souhaitez importer (0 -> clients.csv , 1 ou plus -> comptes.csv ) : ");
+    scanf("%s",j);
+    type = atoi(j);
+
+    if(type == 0){
+        strcpy(vieuxfichier, "clients.csv");
+    }
+    else{
+        strcpy(vieuxfichier, "comptes.csv");
+    }
+
+    printf("Veuillez entrez le nouveau nom de fichier que vous souhaitez importer : ");
+    scanf("%s",nomfichier);
+
+    FILE *fichier = fopen(vieuxfichier, "r");
+
+    FILE *fichiernew = fopen(nomfichier, "r");
+
+    if(fichier!=NULL){
+
+        char ligne[300];
+        char lignenew[300];
+        char tmpLine[200];
+        char tmpLinenew[200];
+        int id;
+        int idnew;
+        int find = 0;
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            find = 0;
+            sscanf(ligne, "%d;%s", &id, tmpLine);
+
+            while(fgets(lignenew, 300, fichiernew) != NULL) {
+
+                    sscanf(lignenew, "%d;%s", &idnew, tmpLinenew);
+
+                     if(id == idnew){
+                        find = 1;
+                    }
+            }
+            rewind(fichiernew);
+
+            if(find == 0){
+                strcat(tmpString, ligne);
+            }
+        }
+
+        rewind(fichiernew);
+        while(fgets(ligne, 300, fichiernew) != NULL) {
+            strcat(tmpString, ligne);
+        }
+
+        fclose(fichier);
+        fclose(fichiernew);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    fichier = fopen(vieuxfichier, "w");
+
+    if(fichier!=NULL){
+
+        fputs(tmpString, fichier);
+        fclose(fichier);
+
+        printf("Le fichier %s a bien ete importe !\n",nomfichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+
 }
 
 void administration(int i){
