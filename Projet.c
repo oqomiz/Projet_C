@@ -721,9 +721,11 @@ void afficher_somme_all(){
 void afficher_somme_type(){
     float total = 0;
     int type;
+    char j[20];
 
-    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
-    scanf("%d",&type);
+    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez le type (0 -> Actif , 1 ou plus -> Inactif ) : ");
+    scanf("%s",j);
+    type = atoi(j);
 
     FILE *fichier= fopen("comptes.csv","r");
 
@@ -736,8 +738,15 @@ void afficher_somme_type(){
         int duree;
 
         while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
-                if(duree == type){
-                    total +=solde;
+                if(type == 0){
+                    if(duree == type){
+                        total +=solde;
+                    }
+                }
+                else{
+                    if(duree > type){
+                        total +=solde;
+                    }
                 }
         }
 
@@ -748,15 +757,17 @@ void afficher_somme_type(){
         printf("Echec de l'ouverture");
     }
 
-    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
+    if(type == 0){
+        printf("La somme de tout les comptes actifs est %f\n",total);
+    }
+    else{
+        printf("La somme de tout les comptes inactifs est %f\n",total);
+    }
 }
 
 void afficher_montant_interets(){
-    float total = 0;
-    int type;
-
-    printf("Un Type de compte est defini par sa duree.\nVeuillez entrez la duree en heure des comptes : ");
-    scanf("%d",&type);
+    float totalactifs = 0;
+    float totalinactifs = 0;
 
     FILE *fichier= fopen("comptes.csv","r");
 
@@ -769,9 +780,12 @@ void afficher_montant_interets(){
         int duree;
 
         while(fscanf(fichier,"%d;%f;%f;%d;%s;",&id,&solde,&taux,&duree,proprio)>0){
-                if(duree == type){
-                    total +=solde*taux;
-                }
+            if(duree == 0){
+                totalactifs +=solde*taux;
+            }
+            else{
+                totalinactifs +=solde*taux;
+            }
         }
 
     fclose(fichier);
@@ -781,15 +795,138 @@ void afficher_montant_interets(){
         printf("Echec de l'ouverture");
     }
 
-    printf("La somme de tout les comptes de duree %d est %f\n",type,total);
+    printf("Le total des interets des comptes actifs a la fin de l'annee est %f\n",totalactifs);
+    printf("Le total des interets des comptes inactifs a la fin de l'annee est %f\n",totalinactifs);
 }
 
 void exporter(){
-    //Exporter l�ensemble des donn�es de l�application
+    char vieuxfichier[50];
+    char nomfichier[50];
+    int type;
+    char j[20];
+
+    printf("Veuillez entrez le fichier que vous souhaitez exporter (0 -> clients.csv , 1 ou plus -> comptes.csv ) : ");
+    scanf("%s",j);
+    type = atoi(j);
+
+    if(type == 0){
+        strcpy(vieuxfichier, "clients.csv");
+    }
+    else{
+        strcpy(vieuxfichier, "comptes.csv");
+    }
+
+    printf("Veuillez entrez le nouveau nom de fichier que vous souhaitez (sans extension) : ");
+    scanf("%s",nomfichier);
+    strcat(nomfichier, ".csv");
+
+    FILE *fichier = fopen(vieuxfichier, "r");
+
+    FILE *fichiernew = fopen(nomfichier, "w");
+
+    if(fichier!=NULL){
+
+        char ligne[300];
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+            fprintf(fichiernew,"%s",ligne);
+        }
+
+        fclose(fichier);
+        fclose(fichiernew);
+
+        printf("Vous pouvez maintenant recuperer le fichier %s, il contiendra toutes les donnees du fichier %s !\n",nomfichier,vieuxfichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
 }
 
 void importer(){
-    //Importer des donn�es dans l�application (selon un format que vous d�finirez, il est fortement conseill� de se baser sur le format qui vous sert a exporter les donn�es). Dans le cas o� l�application contient d�j� des donn�es, les donn�es import�es devront fusionner avec les anciennes.
+    //Importer des donnees dans lapplication (selon un format que vous definirez, il est fortement conseille de se baser sur le format qui vous sert a exporter les donnees). Dans le cas ou lapplication contient deja des donnees, les donnees importees devront fusionner avec les anciennes.
+
+    char vieuxfichier[50];
+    char nomfichier[50];
+    int type;
+    char j[20];
+
+    char tmpString[2000] = "";
+
+    printf("Veuillez entrez le fichier sur lequel que vous souhaitez importer (0 -> clients.csv , 1 ou plus -> comptes.csv ) : ");
+    scanf("%s",j);
+    type = atoi(j);
+
+    if(type == 0){
+        strcpy(vieuxfichier, "clients.csv");
+    }
+    else{
+        strcpy(vieuxfichier, "comptes.csv");
+    }
+
+    printf("Veuillez entrez le nouveau nom de fichier que vous souhaitez importer : ");
+    scanf("%s",nomfichier);
+
+    FILE *fichier = fopen(vieuxfichier, "r");
+
+    FILE *fichiernew = fopen(nomfichier, "r");
+
+    if(fichier!=NULL){
+
+        char ligne[300];
+        char lignenew[300];
+        char tmpLine[200];
+        char tmpLinenew[200];
+        int id;
+        int idnew;
+        int find = 0;
+
+        while(fgets(ligne, 300, fichier) != NULL) {
+
+            find = 0;
+            sscanf(ligne, "%d;%s", &id, tmpLine);
+
+            while(fgets(lignenew, 300, fichiernew) != NULL) {
+
+                    sscanf(lignenew, "%d;%s", &idnew, tmpLinenew);
+
+                     if(id == idnew){
+                        find = 1;
+                    }
+            }
+            rewind(fichiernew);
+
+            if(find == 0){
+                strcat(tmpString, ligne);
+            }
+        }
+
+        rewind(fichiernew);
+        while(fgets(ligne, 300, fichiernew) != NULL) {
+            strcat(tmpString, ligne);
+        }
+
+        fclose(fichier);
+        fclose(fichiernew);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+    fichier = fopen(vieuxfichier, "w");
+
+    if(fichier!=NULL){
+
+        fputs(tmpString, fichier);
+        fclose(fichier);
+
+        printf("Le fichier %s a bien ete importe !\n",nomfichier);
+    }
+    else{
+        printf("Echec de l'ouverture");
+    }
+
+
 }
 
 void administration(int i){
